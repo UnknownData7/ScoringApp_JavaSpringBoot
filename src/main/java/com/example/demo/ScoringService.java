@@ -14,8 +14,8 @@ import java.util.List;
 public class ScoringService {
 
     private final List<ScoringRule> rules;
-    private static final int APPROVE_THRESHOLD = 20;
-    private static final int REVIEW_THRESHOLD = 10;
+    private static final int APPROVE_THRESHOLD = 80;
+    private static final int REVIEW_THRESHOLD = 40;
 
     public ScoringService(List<ScoringRule> rules) {
         this.rules = rules;
