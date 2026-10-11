@@ -5,6 +5,7 @@ import com.example.demo.model.LoanApplication;
 import com.example.demo.model.RuleResult;
 import org.springframework.stereotype.Component;
 
+//Правило по возрасту
 @Component
 public class AgeRule implements ScoringRule {
 
