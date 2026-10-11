@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+### Logo TKB ###
+src/main/resources/static/tkb_logo.png

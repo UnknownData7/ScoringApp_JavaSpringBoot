@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Скоринг заявки</title>
+    <style>
+        :root {
+            --brand: #0b4f9c;        /* поменяй на нужный фирменный цвет */
+            --bg: #f4f6f9;
+            --ok: #1a8f4c;
+            --warn: #d98a00;
+            --bad: #c62828;
+        }
+        body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; }
+        header { background: var(--brand); color: #fff; padding: 16px 24px; font-size: 20px;
+            display: flex; justify-content: space-between; align-items: center; }
+        header img { height: 32px; background: #fff; padding: 4px 8px; border-radius: 4px; }
+        .card { background: #fff; max-width: 480px; margin: 24px auto; padding: 24px;
+            border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        label { display: block; margin-top: 12px; font-size: 14px; color: #444; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px;
+            border: 1px solid #ccd3dc; border-radius: 4px; }
+        button { margin-top: 20px; width: 100%; padding: 12px; background: var(--brand);
+            color: #fff; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { opacity: 0.9; }
+        #result { margin-top: 20px; padding: 12px; border-radius: 4px; display: none; border-left: 6px solid #999; background: #f0f0f0; }
+        #result.APPROVED { border-left-color: var(--ok); background: #e8f5ee; }
+        #result.MANUAL_REVIEW { border-left-color: var(--warn); background: #fff4e0; }
+        #result.REJECTED { border-left-color: var(--bad); background: #fdeaea; }
+    </style>
+</head>
+<body>
+<header>
+    <span>Скоринг заявки на кредит</span>
+    <img src="tkb_logo.png" alt="Логотип банка">
+</header>
+
+<div class="card">
+    <label>Возраст <input type="number" id="age" value="30"></label>
+    <label>Ежемесячный доход <input type="number" id="monthlyIncome" value="100000"></label>
+    <label>Стаж, месяцев <input type="number" id="workExperienceMonths" value="36"></label>
+    <label>Сумма кредита <input type="number" id="loanAmount" value="500000"></label>
+    <label>Срок, месяцев <input type="number" id="termMonths" value="24"></label>
+    <label>Текущие платежи в месяц <input type="number" id="existingMonthlyPayments" value="0"></label>
+    <label>Количество просрочек <input type="number" id="overdueCount" value="0"></label>
+
+    <button onclick="sendApplication()">Рассчитать</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    async function sendApplication() {
+        const application = {
+            age: Number(document.getElementById("age").value),
+            monthlyIncome: Number(document.getElementById("monthlyIncome").value),
+            workExperienceMonths: Number(document.getElementById("workExperienceMonths").value),
+            loanAmount: Number(document.getElementById("loanAmount").value),
+            termMonths: Number(document.getElementById("termMonths").value),
+            existingMonthlyPayments: Number(document.getElementById("existingMonthlyPayments").value),
+            overdueCount: Number(document.getElementById("overdueCount").value)
+        };
+
+        const response = await fetch("/api/scoring", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(application)
+        });
+
+        const resultDiv = document.getElementById("result");
+        resultDiv.style.display = "block";
+
+        if (!response.ok) {
+            resultDiv.className = "";
+            resultDiv.textContent = "Ошибка запроса: " + response.status;
+            return;
+        }
+
+        const result = await response.json();
+        resultDiv.className = result.decision;
+
+        let html = "<b>Решение: " + result.decision + "</b><br>";
+        html += "Итоговый балл: " + result.totalScore + "<ul>";
+        for (const rule of result.ruleResults) {
+            html += "<li>" + rule.ruleName + ": " + rule.points + " — " + rule.comment + "</li>";
+        }
+        html += "</ul>";
+        resultDiv.innerHTML = html;
+    }
+</script>
+</body>
+</html>

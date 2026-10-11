@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 // Заявка на кредит, данные о клиенте, которые будут на входе (в заявке)
 public record LoanApplication(
-        int age,
-        BigDecimal monthlyIncome,
-        int workExperienceMonths,
-        BigDecimal loanAmount,
-        int termMonths,
-        BigDecimal existingMonthlyPayments,
-        int overdueCount
+        int age, // возраст
+        BigDecimal monthlyIncome, // доход
+        int workExperienceMonths, // стаж работы
+        BigDecimal loanAmount, // сумма кредита
+        int termMonths, // сроки погашения
+        BigDecimal existingMonthlyPayments, // текущие ежемесячные платежи по кредитам
+        int overdueCount // просроченная задолженность
 ) {
 }
 
